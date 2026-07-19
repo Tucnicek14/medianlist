@@ -9,7 +9,7 @@ async function loadList(url, targetArray, listElId, countElId, onError) {
     const data = await res.json();
     data.sort((a, b) => a.rank - b.rank); // always trust "rank" field, not array order
     targetArray.push(...data);
-    render(targetArray, listElId, countElId, targetArray === mainLevels ? 'level' : 'legacy-level');
+    render(targetArray, listElId, countElId, targetArray === mainLevels ? 'level' : 'advanced-level');
   } catch (err) {
     document.getElementById(listElId).innerHTML =
       `<p class="empty">Couldn't load ${url} (${err.message}). If you're opening this file directly, run a local server instead — see the README note.</p>`;
