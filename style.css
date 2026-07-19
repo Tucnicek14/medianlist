@@ -99,6 +99,31 @@ main { max-width: 900px; margin: 0 auto; padding: 28px 24px 80px; }
 
 .loading, .empty { color: var(--text-dim); padding: 40px 0; text-align: center; }
 
+legacy { max-width: 900px; margin: 0 auto; padding: 28px 24px 80px; }
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+#legacy_search {
+  flex: 1;
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+#legacy_search:focus { outline: 2px solid var(--cyan); outline-offset: 1px; }
+.count { color: var(--text-dim); font-size: 0.85rem; white-space: nowrap; }
+
+.loading, .empty { color: var(--text-dim); padding: 40px 0; text-align: center; }
+
+
 /* ---------- List rows ---------- */
 .list { display: flex; flex-direction: column; gap: 10px; }
 
