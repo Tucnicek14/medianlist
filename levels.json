@@ -1,0 +1,35 @@
+[
+  {
+    "rank": 1,
+    "name": "Tartarus",
+    "creator": "Riot",
+    "verifier": "Riot",
+    "levelId": 10565740,
+    "difficulty": "Extreme Demon",
+    "videoId": "hyM4reNe0F0",
+    "points": 500,
+    "description": "Widely considered one of the hardest levels ever verified."
+  },
+  {
+    "rank": 2,
+    "name": "Silent Clubstep",
+    "creator": "Cyclic",
+    "verifier": "Cyclic",
+    "levelId": 39284925,
+    "difficulty": "Extreme Demon",
+    "videoId": "dQw4w9WgXcQ",
+    "points": 480,
+    "description": "A brutal reimagining of Clubstep with dense timing-based gameplay."
+  },
+  {
+    "rank": 3,
+    "name": "Sonic Wave",
+    "creator": "Cyclic",
+    "verifier": "Cyclic",
+    "levelId": 33061190,
+    "difficulty": "Extreme Demon",
+    "videoId": "dQw4w9WgXcQ",
+    "points": 460,
+    "description": "A dual-based extreme demon known for its wave sections."
+  }
+]
