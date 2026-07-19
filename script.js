@@ -7,6 +7,7 @@ async function loadLevels() {
     levels = await res.json();
     levels.sort((a, b) => a.rank - b.rank); // always trust "rank" field, not array order
     render(levels);
+    handleRoute(); // in case the page loaded on a #level-N link
   } catch (err) {
     document.getElementById('list').innerHTML =
       `<p class="empty">Couldn't load levels.json (${err.message}). If you're opening this file directly, run a local server instead — see the README note.</p>`;
@@ -38,26 +39,57 @@ function render(data) {
   `).join('');
 
   list.querySelectorAll('.row').forEach(row => {
-    row.addEventListener('click', () => openModal(row.dataset.id));
+    row.addEventListener('click', () => {
+      window.location.hash = `level-${row.dataset.id}`;
+    });
   });
 }
 
-function openModal(rank) {
-  const lvl = levels.find(l => String(l.rank) === rank);
-  if (!lvl) return;
-  document.getElementById('modal-body').innerHTML = `
-    <h2>#${lvl.rank} — ${escapeHtml(lvl.name)}</h2>
-    <p>${escapeHtml(lvl.description || '')}</p>
-    <p style="color:var(--text-dim); font-size:0.85rem;">
-      Creator: ${escapeHtml(lvl.creator)} · Level ID: ${lvl.levelId} · ${lvl.points} points
-    </p>
-    ${lvl.videoId ? `<iframe src="https://www.youtube.com/embed/${lvl.videoId}" allowfullscreen></iframe>` : ''}
-  `;
-  document.getElementById('modal').hidden = false;
+function showDetail(rank) {
+  const lvl = levels.find(l => String(l.rank) === String(rank));
+  const body = document.getElementById('detail-body');
+
+  if (!lvl) {
+    body.innerHTML = `<p class="detail-not-found">Level not found.</p>`;
+  } else {
+    body.innerHTML = `
+      <div class="detail-card">
+        <p class="detail-rank">#${lvl.rank}</p>
+        <h2>${escapeHtml(lvl.name)}</h2>
+        <div class="detail-meta">
+          <span>Creator: ${escapeHtml(lvl.creator)}</span>
+          <span>Verifier: ${escapeHtml(lvl.verifier)}</span>
+          <span>Level ID: ${lvl.levelId}</span>
+          <span>${lvl.points} points</span>
+          <span class="diff-tag">${escapeHtml(lvl.difficulty)}</span>
+        </div>
+        <p class="description">${escapeHtml(lvl.description || '')}</p>
+        ${lvl.videoId ? `<iframe src="https://www.youtube.com/embed/${lvl.videoId}" allowfullscreen title="Verification video for ${escapeHtml(lvl.name)}"></iframe>` : ''}
+      </div>
+    `;
+  }
+
+  setView('detail');
 }
 
-function closeModal() {
-  document.getElementById('modal').hidden = true;
+function setView(view) {
+  document.getElementById('main-view').hidden = view !== 'main';
+  document.getElementById('about-view').hidden = view !== 'about';
+  document.getElementById('detail-view').hidden = view !== 'detail';
+
+  document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('is-active'));
+  const navBtn = document.querySelector(`.nav-link[data-view="${view}"]`);
+  if (navBtn) navBtn.classList.add('is-active');
+}
+
+function handleRoute() {
+  const hash = window.location.hash; // e.g. "#level-3"
+  const match = hash.match(/^#level-(.+)$/);
+  if (match) {
+    showDetail(match[1]);
+  } else {
+    setView('main');
+  }
 }
 
 function escapeHtml(str) {
@@ -75,19 +107,20 @@ document.getElementById('search').addEventListener('input', (e) => {
   render(filtered);
 });
 
-// modal close
-document.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeModal));
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+// back button clears the hash and returns to the list
+document.getElementById('back-btn').addEventListener('click', () => {
+  window.location.hash = '';
+});
 
-// nav tabs
+// nav tabs (Main List / About)
 document.querySelectorAll('.nav-link').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('is-active'));
-    btn.classList.add('is-active');
-    const view = btn.dataset.view;
-    document.getElementById('main-view').hidden = view !== 'main';
-    document.getElementById('about-view').hidden = view !== 'about';
+    if (btn.dataset.view === 'main') window.location.hash = '';
+    setView(btn.dataset.view);
   });
 });
+
+// respond to back/forward navigation and hash changes
+window.addEventListener('hashchange', handleRoute);
 
 loadLevels();
