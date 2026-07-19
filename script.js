@@ -1,22 +1,24 @@
-let levels = [];
+let mainLevels = [];
+let legacyLevels = [];
 
-async function loadLevels() {
+// generic loader: fetches a JSON file into an array and renders it into a given list element
+async function loadList(url, targetArray, listElId, countElId, onError) {
   try {
-    const res = await fetch('levels.json');
+    const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    levels = await res.json();
-    levels.sort((a, b) => a.rank - b.rank); // always trust "rank" field, not array order
-    render(levels);
-    handleRoute(); // in case the page loaded on a #level-N link
+    const data = await res.json();
+    data.sort((a, b) => a.rank - b.rank); // always trust "rank" field, not array order
+    targetArray.push(...data);
+    render(targetArray, listElId, countElId, targetArray === mainLevels ? 'level' : 'legacy-level');
   } catch (err) {
-    document.getElementById('list').innerHTML =
-      `<p class="empty">Couldn't load levels.json (${err.message}). If you're opening this file directly, run a local server instead — see the README note.</p>`;
+    document.getElementById(listElId).innerHTML =
+      `<p class="empty">Couldn't load ${url} (${err.message}). If you're opening this file directly, run a local server instead — see the README note.</p>`;
   }
 }
 
-function render(data) {
-  const list = document.getElementById('list');
-  const count = document.getElementById('count');
+function render(data, listElId, countElId, hashPrefix) {
+  const list = document.getElementById(listElId);
+  const count = document.getElementById(countElId);
   count.textContent = `${data.length} level${data.length === 1 ? '' : 's'}`;
 
   if (data.length === 0) {
@@ -40,21 +42,26 @@ function render(data) {
 
   list.querySelectorAll('.row').forEach(row => {
     row.addEventListener('click', () => {
-      window.location.hash = `level-${row.dataset.id}`;
+      window.location.hash = `${hashPrefix}-${row.dataset.id}`;
     });
   });
 }
 
-function showDetail(rank) {
-  const lvl = levels.find(l => String(l.rank) === String(rank));
+function showDetail(rank, source) {
+  const pool = source === 'legacy' ? legacyLevels : mainLevels;
+  const lvl = pool.find(l => String(l.rank) === String(rank));
   const body = document.getElementById('detail-body');
+  const backBtn = document.getElementById('back-btn');
+
+  // back button should return to whichever list this level came from
+  backBtn.dataset.returnTo = source === 'legacy' ? 'legacy' : 'main';
 
   if (!lvl) {
     body.innerHTML = `<p class="detail-not-found">Level not found.</p>`;
   } else {
     body.innerHTML = `
       <div class="detail-card">
-        <p class="detail-rank">#${lvl.rank}</p>
+        <p class="detail-rank">#${lvl.rank}${source === 'legacy' ? ' · Legacy List' : ''}</p>
         <h2>${escapeHtml(lvl.name)}</h2>
         <div class="detail-meta">
           <span>Creator: ${escapeHtml(lvl.creator)}</span>
@@ -74,6 +81,7 @@ function showDetail(rank) {
 
 function setView(view) {
   document.getElementById('main-view').hidden = view !== 'main';
+  document.getElementById('legacy-view').hidden = view !== 'legacy';
   document.getElementById('about-view').hidden = view !== 'about';
   document.getElementById('detail-view').hidden = view !== 'detail';
 
@@ -83,10 +91,18 @@ function setView(view) {
 }
 
 function handleRoute() {
-  const hash = window.location.hash; // e.g. "#level-3"
-  const match = hash.match(/^#level-(.+)$/);
-  if (match) {
-    showDetail(match[1]);
+  const hash = window.location.hash; // "#level-3" or "#legacy-level-2" or "" or "#legacy" or "#about"
+  const legacyLevelMatch = hash.match(/^#legacy-level-(.+)$/);
+  const levelMatch = hash.match(/^#level-(.+)$/);
+
+  if (legacyLevelMatch) {
+    showDetail(legacyLevelMatch[1], 'legacy');
+  } else if (levelMatch) {
+    showDetail(levelMatch[1], 'main');
+  } else if (hash === '#legacy') {
+    setView('legacy');
+  } else if (hash === '#about') {
+    setView('about');
   } else {
     setView('main');
   }
@@ -98,29 +114,40 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-// search
+// search — main list
 document.getElementById('search').addEventListener('input', (e) => {
   const q = e.target.value.trim().toLowerCase();
-  const filtered = levels.filter(l =>
+  const filtered = mainLevels.filter(l =>
     l.name.toLowerCase().includes(q) || l.creator.toLowerCase().includes(q)
   );
-  render(filtered);
+  render(filtered, 'list', 'count', 'level');
 });
 
-// back button clears the hash and returns to the list
+// search — legacy list
+document.getElementById('legacy-search').addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  const filtered = legacyLevels.filter(l =>
+    l.name.toLowerCase().includes(q) || l.creator.toLowerCase().includes(q)
+  );
+  render(filtered, 'legacy-list', 'legacy-count', 'legacy-level');
+});
+
+// back button returns to whichever list the level was opened from
 document.getElementById('back-btn').addEventListener('click', () => {
-  window.location.hash = '';
+  const returnTo = document.getElementById('back-btn').dataset.returnTo;
+  window.location.hash = returnTo === 'legacy' ? 'legacy' : '';
 });
 
-// nav tabs (Main List / About)
+// nav tabs
 document.querySelectorAll('.nav-link').forEach(btn => {
   btn.addEventListener('click', () => {
-    if (btn.dataset.view === 'main') window.location.hash = '';
-    setView(btn.dataset.view);
+    const view = btn.dataset.view;
+    window.location.hash = view === 'main' ? '' : view;
+    setView(view);
   });
 });
 
-// respond to back/forward navigation and hash changes
 window.addEventListener('hashchange', handleRoute);
 
-loadLevels();
+loadList('levels.json', mainLevels, 'list', 'count').then(() => handleRoute());
+loadList('legacy.json', legacyLevels, 'legacy-list', 'legacy-count').then(() => handleRoute());
