@@ -1,0 +1,24 @@
+[
+  {
+    "rank": 1,
+    "name": "Bloodbath",
+    "creator": "Riot",
+    "verifier": "Riot",
+    "levelId": 10126856,
+    "difficulty": "Extreme Demon",
+    "videoId": "dQw4w9WgXcQ",
+    "points": 150,
+    "description": "A former #1 that has since fallen off the main list but remains a legendary classic."
+  },
+  {
+    "rank": 2,
+    "name": "Yatagarasu",
+    "creator": "Zobros",
+    "verifier": "Zobros",
+    "levelId": 10592047,
+    "difficulty": "Extreme Demon",
+    "videoId": "dQw4w9WgXcQ",
+    "points": 140,
+    "description": "A long-standing legacy demon known for its dual-heavy final section."
+  }
+]
