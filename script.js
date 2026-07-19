@@ -48,20 +48,20 @@ function render(data, listElId, countElId, hashPrefix) {
 }
 
 function showDetail(rank, source) {
-  const pool = source === 'legacy' ? legacyLevels : mainLevels;
+  const pool = source === 'advanced' ? advancedLevels : mainLevels;
   const lvl = pool.find(l => String(l.rank) === String(rank));
   const body = document.getElementById('detail-body');
   const backBtn = document.getElementById('back-btn');
 
   // back button should return to whichever list this level came from
-  backBtn.dataset.returnTo = source === 'legacy' ? 'legacy' : 'main';
+  backBtn.dataset.returnTo = source === 'advanced' ? 'advanced' : 'main';
 
   if (!lvl) {
     body.innerHTML = `<p class="detail-not-found">Level not found.</p>`;
   } else {
     body.innerHTML = `
       <div class="detail-card">
-        <p class="detail-rank">#${lvl.rank}${source === 'legacy' ? ' · Legacy List' : ''}</p>
+        <p class="detail-rank">#${lvl.rank}${source === 'advanced' ? ' · Advanced List' : ''}</p>
         <h2>${escapeHtml(lvl.name)}</h2>
         <div class="detail-meta">
           <span>Creator: ${escapeHtml(lvl.creator)}</span>
@@ -81,7 +81,7 @@ function showDetail(rank, source) {
 
 function setView(view) {
   document.getElementById('main-view').hidden = view !== 'main';
-  document.getElementById('legacy-view').hidden = view !== 'legacy';
+  document.getElementById('advanced-view').hidden = view !== 'legacy';
   document.getElementById('about-view').hidden = view !== 'about';
   document.getElementById('detail-view').hidden = view !== 'detail';
 
@@ -92,15 +92,15 @@ function setView(view) {
 
 function handleRoute() {
   const hash = window.location.hash; // "#level-3" or "#legacy-level-2" or "" or "#legacy" or "#about"
-  const legacyLevelMatch = hash.match(/^#legacy-level-(.+)$/);
+  const advancedLevelMatch = hash.match(/^#advanced-level-(.+)$/);
   const levelMatch = hash.match(/^#level-(.+)$/);
 
-  if (legacyLevelMatch) {
-    showDetail(legacyLevelMatch[1], 'legacy');
+  if (advancedLevelMatch) {
+    showDetail(advancedLevelMatch[1], 'legacy');
   } else if (levelMatch) {
     showDetail(levelMatch[1], 'main');
-  } else if (hash === '#legacy') {
-    setView('legacy');
+  } else if (hash === '#advanced') {
+    setView('advanced');
   } else if (hash === '#about') {
     setView('about');
   } else {
@@ -124,18 +124,18 @@ document.getElementById('search').addEventListener('input', (e) => {
 });
 
 // search — legacy list
-document.getElementById('legacy-search').addEventListener('input', (e) => {
+document.getElementById('advancedsearch').addEventListener('input', (e) => {
   const q = e.target.value.trim().toLowerCase();
-  const filtered = legacyLevels.filter(l =>
+  const filtered = advancedLevels.filter(l =>
     l.name.toLowerCase().includes(q) || l.creator.toLowerCase().includes(q)
   );
-  render(filtered, 'legacy-list', 'legacy-count', 'legacy-level');
+  render(filtered, 'advanced-list', 'advanced-count', 'advanced-level');
 });
 
 // back button returns to whichever list the level was opened from
 document.getElementById('back-btn').addEventListener('click', () => {
   const returnTo = document.getElementById('back-btn').dataset.returnTo;
-  window.location.hash = returnTo === 'legacy' ? 'legacy' : '';
+  window.location.hash = returnTo === 'advanced' ? 'advanced' : '';
 });
 
 // nav tabs
