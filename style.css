@@ -84,7 +84,7 @@ main { max-width: 900px; margin: 0 auto; padding: 28px 24px 80px; }
   gap: 16px;
   margin-bottom: 20px;
 }
-#search {
+.search-input {
   flex: 1;
   background: var(--bg-raised);
   border: 1px solid var(--line);
@@ -93,8 +93,20 @@ main { max-width: 900px; margin: 0 auto; padding: 28px 24px 80px; }
   border-radius: 8px;
   font-family: var(--font-body);
   font-size: 0.95rem;
+  transition: border-color 0.15s;
 }
-#search:focus { outline: 2px solid var(--cyan); outline-offset: 1px; }
+.search-input::placeholder { color: var(--text-dim); }
+.search-input:focus {
+  outline: 2px solid var(--cyan);
+  outline-offset: 1px;
+  border-color: var(--cyan);
+}
+
+/* legacy list gets its own accent so it reads as a distinct section */
+.search-input--legacy:focus {
+  outline-color: var(--gold);
+  border-color: var(--gold);
+}
 .count { color: var(--text-dim); font-size: 0.85rem; white-space: nowrap; }
 
 .loading, .empty { color: var(--text-dim); padding: 40px 0; text-align: center; }
