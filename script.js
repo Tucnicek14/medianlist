@@ -1,5 +1,5 @@
 let mainLevels = [];
-let legacyLevels = [];
+let advancedLevels = [];
 
 // generic loader: fetches a JSON file into an array and renders it into a given list element
 async function loadList(url, targetArray, listElId, countElId, onError) {
@@ -81,7 +81,7 @@ function showDetail(rank, source) {
 
 function setView(view) {
   document.getElementById('main-view').hidden = view !== 'main';
-  document.getElementById('advanced-view').hidden = view !== 'legacy';
+  document.getElementById('advanced-view').hidden = view !== 'advanced';
   document.getElementById('about-view').hidden = view !== 'about';
   document.getElementById('detail-view').hidden = view !== 'detail';
 
@@ -91,12 +91,12 @@ function setView(view) {
 }
 
 function handleRoute() {
-  const hash = window.location.hash; // "#level-3" or "#legacy-level-2" or "" or "#legacy" or "#about"
+  const hash = window.location.hash; // "#level-3" or "#advanced-level-2" or "" or "#advanced" or "#about"
   const advancedLevelMatch = hash.match(/^#advanced-level-(.+)$/);
   const levelMatch = hash.match(/^#level-(.+)$/);
 
   if (advancedLevelMatch) {
-    showDetail(advancedLevelMatch[1], 'legacy');
+    showDetail(advancedLevelMatch[1], 'advanced');
   } else if (levelMatch) {
     showDetail(levelMatch[1], 'main');
   } else if (hash === '#advanced') {
@@ -123,8 +123,8 @@ document.getElementById('search').addEventListener('input', (e) => {
   render(filtered, 'list', 'count', 'level');
 });
 
-// search — legacy list
-document.getElementById('advancedsearch').addEventListener('input', (e) => {
+// search — advanced list
+document.getElementById('advanced-search').addEventListener('input', (e) => {
   const q = e.target.value.trim().toLowerCase();
   const filtered = advancedLevels.filter(l =>
     l.name.toLowerCase().includes(q) || l.creator.toLowerCase().includes(q)
@@ -150,4 +150,4 @@ document.querySelectorAll('.nav-link').forEach(btn => {
 window.addEventListener('hashchange', handleRoute);
 
 loadList('levels.json', mainLevels, 'list', 'count').then(() => handleRoute());
-loadList('legacy.json', legacyLevels, 'legacy-list', 'legacy-count').then(() => handleRoute());
+loadList('advanced.json', advancedLevels, 'advanced-list', 'advanced-count').then(() => handleRoute());

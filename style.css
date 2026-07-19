@@ -102,7 +102,7 @@ main { max-width: 900px; margin: 0 auto; padding: 28px 24px 80px; }
   border-color: var(--cyan);
 }
 
-/* legacy list gets its own accent so it reads as a distinct section */
+/* advanced list gets its own accent so it reads as a distinct section */
 .search-input--advanced:focus {
   outline-color: var(--gold);
   border-color: var(--gold);
