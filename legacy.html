@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demon List</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <h1>Demon List</h1>
+      </div>
+      <nav>
+        <button class="nav-link is-active" data-view="main">Main List</button>
+        <button class="nav-link" data-view="about">About</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="main-view">
+      <div class="toolbar">
+        <input id="search" type="text" placeholder="Search levels or creators…" autocomplete="off">
+        <span id="count" class="count"></span>
+      </div>
+
+      <div id="list" class="list" aria-live="polite">
+        <p class="loading">Loading levels…</p>
+      </div>
+    </section>
+
+    <section id="about-view" hidden>
+      <div class="about-card">
+        <h2>What is this?</h2>
+        <p>This is a starter template for a Geometry Dash demon list. Levels are stored in <code>levels.json</code> and rendered here — edit that file to add, remove, or reorder levels.</p>
+      </div>
+    </section>
+
+    <section id="detail-view" hidden>
+      <button id="back-btn" class="back-btn">← Back to list</button>
+      <div id="detail-body"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
